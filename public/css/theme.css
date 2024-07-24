@@ -1,0 +1,115 @@
+/*For color I have tried to mention the name and then with the help of Visual studio feature I was able to select the color in rgb combination.*/
+
+/* Importing two fonts, one for table headers and one for page headers and navigation bar*/
+@import url('https://fonts.googleapis.com/css2?family=Permanent+Marker:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Pacifico:wght@400;700&display=swap');
+
+/* Simple formatting for the navigation Bar */
+.bg-light {
+    background: linear-gradient(90deg, white 0%, lightgray 100%);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Formatting of text in Navigation Bar (My name staying in blue color)*/
+.navbar-light .navbar-brand {
+    font-family:'Permanent Marker', sans-serif;
+    color: dodgerblue;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Formatting of the Navigation link for pages Home, About, HTMLdemo, and AddStudent*/
+.nav-link {
+    font-family: 'Permanent Marker', sans-serif;
+    color: darkslategray;
+}
+
+/* Formatting of the main Background of the whole website*/
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(to bottom right, rgb(118, 216, 187), rgb(231, 247, 160));
+    background-attachment: fixed;
+    background-size: cover;
+}
+
+/* Formatting of headers text of the whole website*/
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Permanent Marker', sans-serif;
+    color: rgb(109, 47, 32);
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Simple formatting of the anchor elements*/
+a {
+    color: dodgerblue;
+}
+
+a:hover {
+    color: darkblue;
+}
+
+/* Separate formatting for any tables added in the website*/
+table {
+    width: 100%; 
+    border-collapse: collapse; 
+    border-radius: 8px; /* This will give us the rounded corners for all tables */
+    overflow: hidden; /* This will make sure the rounded corners are visible */
+}
+
+
+/* Format for Table Headers */
+thead th {
+    background: rgb(194, 101, 65); 
+    color: lightgoldenrodyellow; 
+    text-align: left; 
+    padding: 10px; 
+    font-family: 'Pacifico', sans-serif; 
+    font-size: 1.1em; 
+}
+
+/* Format for Table Footers */
+tfoot td {
+    color:rgb(48, 23, 6); 
+    padding: 10px; 
+    font-family: 'Permanent Marker', sans-serif; 
+    font-size: 1.1em; 
+    text-align: right; 
+}
+
+/* Format for Table Body */
+table tr:nth-child(odd) td {
+    background: rgb(119, 188, 245); 
+}
+
+table tr:nth-child(even) td {
+    background: rgb(71, 118, 245); 
+}
+
+tbody td {
+    padding: 10px; 
+    text-align: left; 
+    font-family: 'Permanent Marker', sans-serif; 
+    font-size: 1em; 
+    border: 1px solid white; /* formatting of border in the table which will have white color. */
+    color: darkslategray; 
+}
+
+/* Format for the Button */
+.btn-primary {
+    background-color: rgb(62, 62, 218); 
+    background-image: linear-gradient(to bottom,  rgb(54, 58, 218),  rgb(60, 61, 215));
+    box-shadow: 0 0.5rem 1rem rgba(0,123,255,0.5); 
+}
+.btn-primary:hover {
+    background-color: rgb(62, 62, 218); 
+}
+
+/* Format for the Legends */
+legend {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    font-family: 'Permanent Marker', sans-serif;
+    color: darkslategray;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
