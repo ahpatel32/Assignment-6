@@ -154,7 +154,7 @@
             dataCollection.students[studentIndex] = studentData;
     
             // Write the updated students array back to the students.json file
-            fs.writeFile(path.join(datafolderpath, 'data', 'students.json'), JSON.stringify(dataCollection.students, null, 2), 'utf8', (err) => {
+            fs.writeFile(path.join(datafolderpath, 'students.json'), JSON.stringify(dataCollection.students, null, 2), 'utf8', (err) => {
                 if (err) {
                     return reject("Unable to write to students.json");
                 }
