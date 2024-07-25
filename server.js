@@ -151,6 +151,7 @@ const exphbs = require('express-handlebars');
             });
     });
 
+    //New path for updating the students data.
     app.post('/student/update', (req, res) => {
         collegeData.updateStudent(req.body)
             .then(() => {
