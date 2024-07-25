@@ -38,7 +38,7 @@ const exphbs = require('express-handlebars');
         }    
         }
     }));
-    app.set("views", path.join(__dirname + "views"));
+    app.set("views", path.join(__dirname + "/views"));
     app.set('view engine', '.hbs');
 
     //Static route to public folder - used to use the custom css files.
