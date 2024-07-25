@@ -60,11 +60,10 @@ table {
 
 /* Format for Table Headers */
 thead th {
-    background: rgb(194, 101, 65); 
+    background: rgb(168, 156, 151); 
     color: lightgoldenrodyellow; 
     text-align: left; 
     padding: 10px; 
-    font-family: 'Pacifico', sans-serif; 
     font-size: 1.1em; 
 }
 
@@ -79,7 +78,7 @@ tfoot td {
 
 /* Format for Table Body */
 table tr:nth-child(odd) td {
-    background: rgb(119, 188, 245); 
+    background: rgb(197, 236, 203); 
 }
 
 table tr:nth-child(even) td {
@@ -89,7 +88,6 @@ table tr:nth-child(even) td {
 tbody td {
     padding: 10px; 
     text-align: left; 
-    font-family: 'Permanent Marker', sans-serif; 
     font-size: 1em; 
     border: 1px solid white; /* formatting of border in the table which will have white color. */
     color: darkslategray; 
@@ -104,7 +102,7 @@ table td a:hover {
 
 /* Format for the Button */
 .btn-primary {
-    background-color: rgb(62, 62, 218); 
+    background-color: rgb(62, 218, 192); 
     background-image: linear-gradient(to bottom,  rgb(54, 58, 218),  rgb(60, 61, 215));
     box-shadow: 0 0.5rem 1rem rgba(0,123,255,0.5); 
 }

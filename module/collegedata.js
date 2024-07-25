@@ -9,11 +9,11 @@
     var dataCollection = null;
     const fs = require('fs');
     const path = require('path');
-
+    const datafolderpath = 'D:/BTT - 2024/Sem 2/WEB700/Assignment-5';
     function initialize() {
         return new Promise((resolve, reject) => {
             //defining a constant variable with the datafolder path values.
-            const datafolderpath = 'D:/BTT - 2024/Sem 2/WEB700/Assignment-4';
+            
 
             //reading the courses.json file
             fs.readFile(path.join(datafolderpath, 'data', 'courses.json'), 'utf8', (err, courseData) => {
@@ -132,6 +132,36 @@
             }
         });
     }
+
+    // Define the updateStudent method
+    function updateStudent(studentData) {
+        return new Promise((resolve, reject) => {
+            // Log the incoming student data
+            console.log("Updating student with data:", studentData);
+
+            // Ensure studentNum is a number
+            studentData.studentNum = parseInt(studentData.studentNum, 10);
+            const studentIndex = dataCollection.students.findIndex(student => student.studentNum === studentData.studentNum);
+            console.log(studentIndex)
+            if (studentIndex === -1) {
+                return reject("Student not found");
+            }
+    
+            // Update the TA field based on whether the checkbox is checked or not
+            studentData.TA = studentData.TA === "on";
+    
+            // Update the student data
+            dataCollection.students[studentIndex] = studentData;
+    
+            // Write the updated students array back to the students.json file
+            fs.writeFile(path.join(datafolderpath, 'data', 'students.json'), JSON.stringify(dataCollection.students, null, 2), 'utf8', (err) => {
+                if (err) {
+                    return reject("Unable to write to students.json");
+                }
+                resolve();
+            });
+        });
+    }
     
 
     /*
@@ -151,4 +181,4 @@
     //mentioning this so that we can export the functions from this file.
     */
 
-    module.exports = { initialize, getAllStudents, getCourses, getStudentsByCourse, getStudentByNum, addStudent, getCourseById};
+    module.exports = { initialize, getAllStudents, getCourses, getStudentsByCourse, getStudentByNum, addStudent, getCourseById, updateStudent};

@@ -113,14 +113,13 @@ const exphbs = require('express-handlebars');
     app.get("/student/:num", (req, res) => {
         const studentNum = parseInt(req.params.num); // Convert params.num to integer
         console.log("Searching for student with studentNum:", studentNum);
-        
+        let studentData = null;
         // call getStudentByNum() to get student details by number.
         collegeData.getStudentByNum(studentNum)
             .then(student => {
-                // Return the student object
                 studentData = student;
                 return  collegeData.getCourses();
-                res.render("student", { student: student });
+                //res.render("student", { student: student });
             })
             .then(courses => {
                 res.render("student", { student: studentData, courses: courses })
@@ -143,6 +142,17 @@ const exphbs = require('express-handlebars');
             .catch(err => {
                 console.error("Error fetching course:", err);
                 res.status(404).render('course', { message: "Course not found" });
+            });
+    });
+
+    app.post('/student/update', (req, res) => {
+        collegeData.updateStudent(req.body)
+            .then(() => {
+                res.redirect('/students'); // Redirect to the students page after updating the student
+            })
+            .catch((err) => {
+                console.error("Error updating student:", err);
+                res.status(500).send('Unable to update student');
             });
     });
 
