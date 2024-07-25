@@ -152,6 +152,9 @@
     
             // Update the student data
             dataCollection.students[studentIndex] = studentData;
+
+            const filePath = path.join(datafolderpath, 'students.json');
+            console.log("Writing to file:", filePath);
     
             // Write the updated students array back to the students.json file
             fs.writeFile(path.join(datafolderpath, 'students.json'), JSON.stringify(dataCollection.students, null, 2), 'utf8', (err) => {
