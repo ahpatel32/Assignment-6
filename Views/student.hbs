@@ -49,17 +49,19 @@
                 </div>
             </fieldset>
 
+
             <fieldset>
                 <legend>Additional Information</legend>
                 <div class="row">
                     <!-- TA Checkbox -->
                     <div class="col-md-4">
                         <div class="form-group">
-                            <label> College Employment: </label><br>
+                            <label>College Employment:</label><br>
                             <label style="margin-right: 10px;">Teaching Assistant:</label>
                             <input type="checkbox" name="TA" style="width: auto;" {{#if student.TA}}checked{{/if}} />
                         </div>
                     </div>
+
                     <!-- Status Radios -->
                     <div class="col-md-4">
                         <div class="form-group">
@@ -68,11 +70,12 @@
                             <input name="status" type="radio" value="Part Time" {{#equal student.status "Part Time"}}checked{{/equal}} /> Part Time
                         </div>
                     </div>
+
                     <!-- Course Select -->
                     <div class="col-md-4">
                         <div class="form-group">
-                            <label>Course:</label>
-                            <select name="course" class="form-control">
+                            <label for="course">Course:</label>
+                            <select name="course" class="form-control" id="course">
                                 {{#each courses}}
                                     <option value="{{this.courseId}}" {{#equal ../student.course this.courseId}}selected{{/equal}}>{{this.courseCode}}</option>
                                 {{/each}}
@@ -81,7 +84,6 @@
                     </div>
                 </div>
             </fieldset>
-
             <hr />
 
             <input type="submit" class="btn btn-primary float-right" value="Update Student" /><br /><br /><br />
