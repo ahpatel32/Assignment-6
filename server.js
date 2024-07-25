@@ -13,19 +13,22 @@ var path = require("path");
 var HTTP_PORT = process.env.PORT || 8080;
 var app = express();
 var collegeData = require(path.join(__dirname, 'module', 'collegedata'));
+//adding the variable for express-handlebars 
 const exphbs = require('express-handlebars');
 
 
-    // Configure express-handlebars
+    // Configuring express-handlebars
     app.engine('.hbs', exphbs.engine({
         extname: '.hbs',
         defaultLayout: 'main',        
         helpers: {
+            //custom helper 1
             navLink: function (url, options){
             return '<li' + 
                 ((url == app.locals.activeRoute) ? ' class="nav-item active" ' : ' class="nav-item" ') + 
                 '><a class="nav-link" href="' + url + '">' + options.fn(this) + '</a></li>';
             },
+            //custom helper 2
             equal: function (lvalue, rvalue, options) {
                 console.log('Helper "equal" called with:', lvalue, rvalue);
             if (arguments.length < 3)
@@ -38,6 +41,7 @@ const exphbs = require('express-handlebars');
         }    
         }
     }));
+    //setting path for views directory
     app.set("views", path.join(__dirname + "/views"));
     app.set('view engine', '.hbs');
 
@@ -126,7 +130,7 @@ const exphbs = require('express-handlebars');
                 res.render("student", { student: studentData, courses: courses })
             })
             .catch(err => {
-                // Handle the case where student is not found
+                // Handling the case where student data is not found
                 console.error("Error fetching student:", err);
                 res.render("student", { message: "Student not found" });
             });
@@ -135,12 +139,13 @@ const exphbs = require('express-handlebars');
     // Route to get a specific course by ID
     app.get("/course/:num", (req, res) => {
         const courseId = parseInt(req.params.num, 10); // Convert params.num to integer
-        
+        //call getCourseByID() to get the course details by courseid
         collegeData.getCourseById(courseId)
             .then(course => {
                 res.render('course', { course: course });
             })
             .catch(err => {
+                //Handling the case where course data is not found
                 console.error("Error fetching course:", err);
                 res.status(404).render('course', { message: "Course not found" });
             });
