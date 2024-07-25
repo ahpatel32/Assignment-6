@@ -13,7 +13,39 @@ var path = require("path");
 var HTTP_PORT = process.env.PORT || 8080;
 var app = express();
 var collegeData = require(path.join(__dirname, 'module', 'collegedata'));
+const exphbs = require('express-handlebars');
 
+
+    // Configure express-handlebars
+    app.engine('.hbs', exphbs.engine({
+        extname: '.hbs',
+        defaultLayout: 'main',        
+        helpers: {
+            navLink: function (url, options){
+            return '<li' + 
+                ((url == app.locals.activeRoute) ? ' class="nav-item active" ' : ' class="nav-item" ') + 
+                '><a class="nav-link" href="' + url + '">' + options.fn(this) + '</a></li>';
+            },
+            equal: function (lvalue, rvalue, options) {
+                console.log('Helper "equal" called with:', lvalue, rvalue);
+            if (arguments.length < 3)
+                throw new Error("Handlebars Helper equal needs 2 parameters");
+            if (lvalue != rvalue) {
+                return options.inverse(this);
+            } else {
+                return options.fn(this);
+            }
+        }    
+        }
+    }));
+    app.set('view engine', '.hbs');
+
+    //Static route to public folder - used to use the custom css files.
+    app.use(express.static(path.join(__dirname, "public")))
+
+
+    // Middleware to parse URL-encoded data - used to add students.
+    app.use(express.urlencoded({ extended: true }));
 
     // First GET /students or GET /students?course=value Route to get all students or students by course
     app.get("/students", (req, res) => {
@@ -24,16 +56,17 @@ var collegeData = require(path.join(__dirname, 'module', 'collegedata'));
             .then(students => {
                 //if no records print No students found for this course
                 if (students.length === 0) {
-                    res.status(404).json({ message: "No students found for this course" });
+                    //res.status(404).json({ message: "No students found for this course" });
+                    res.render('students', { students: [], message: "No students found for this course" });
                 //return the students by courses
                 } else {
-                    res.json(students);
+                    res.render('students', { students: students});
                 }
             })
             //if we encounter any error in .then() block, it will be catch by the below code.
             .catch(err => {
                 console.error("Error fetching students by course:", err);
-                res.status(500).json({ message: "Failed to retrieve students by course" });
+                res.render('students', { students: [], message: "Failed to retrieve students by course" });
             });
         } else {
         // Otherwise, call getAllStudents() to get all students
@@ -41,40 +74,21 @@ var collegeData = require(path.join(__dirname, 'module', 'collegedata'));
             .then(students => {
                 //if no records print No students found
                 if (students.length === 0) {
-                    res.status(404).json({ message: "No students found" });
+                    res.render('students', { students: [], message: "No students found" });
                 //return all the students
                 } else {
-                    res.json(students);
+                    res.render('students', { students: students });
                 }
             })
             //if we encounter any error in .then() block, it will be catch by the below code.
             .catch(err => {
                 console.error("Error fetching all students:", err);
-                res.status(500).json({ message: "Failed to retrieve all students" });
+                res.render('students', { students: [], message: "Failed to retrieve all students" });
             });
         }
     });
 
-    // Second GET /tas route to get all TAs
-    app.get("/tas", (req, res) => {
-        // call getTAs() to get all students with Students.TAs property as True.
-        collegeData.getTAs()
-            .then(tas => {
-                //if no record printing No TAs found
-                if (tas.length === 0) {
-                    res.status(404).json({ message: "No TAs found" });
-                //return the TAs 
-                } else {
-                    res.json(tas);
-                }
-            })
-            //if we encounter any error in .then() block, it will be catch by the below code.
-            .catch(err => {
-                console.error("Error fetching all TAs:", err);
-                res.status(500).json({ message: "Failed to retrieve all TAs" });
-            });
-        });
-    
+
     // Third GET /courses route to get all the courses
     app.get("/courses", (req, res) => {
         // call getCourses() to get all Courses.
@@ -82,16 +96,16 @@ var collegeData = require(path.join(__dirname, 'module', 'collegedata'));
             .then(courses => {
                 //if no record printing No Courses found
                 if (courses.length === 0) {
-                    res.status(404).json({ message: "No Courses found" });
+                    res.render('courses', { message: "no course found" });
                 //return the courses 
                 } else {
-                    res.json(courses);
+                    res.render('courses', { courses: courses });
                 }
             })
             //if we encounter any error in .then() block, it will be catch by the below code.
             .catch(err => {
                 console.error("Error fetching all Courses:", err);
-                res.status(500).json({ message: "Failed to retrieve all Courses" });
+                res.render('courses', { message: "Failed to retrieve all Courses" });
             });
         });
     
@@ -104,38 +118,56 @@ var collegeData = require(path.join(__dirname, 'module', 'collegedata'));
         collegeData.getStudentByNum(studentNum)
             .then(student => {
                 // Return the student object
-                res.json(student);
+                studentData = student;
+                return  collegeData.getCourses();
+                res.render("student", { student: student });
+            })
+            .then(courses => {
+                res.render("student", { student: studentData, courses: courses })
             })
             .catch(err => {
                 // Handle the case where student is not found
                 console.error("Error fetching student:", err);
-                res.status(404).json({ message: "Student not found" });
+                res.render("student", { message: "Student not found" });
             });
     });
 
-    //Static route to public folder - used to use the custom css files.
-    app.use(express.static(path.join(__dirname, "public")))
+    // Route to get a specific course by ID
+    app.get("/course/:num", (req, res) => {
+        const courseId = parseInt(req.params.num, 10); // Convert params.num to integer
+        
+        collegeData.getCourseById(courseId)
+            .then(course => {
+                res.render('course', { course: course });
+            })
+            .catch(err => {
+                console.error("Error fetching course:", err);
+                res.status(404).render('course', { message: "Course not found" });
+            });
+    });
 
-
-    // Middleware to parse URL-encoded data - used to add students.
-    app.use(express.urlencoded({ extended: true }));
-
+    app.use(function(req,res,next){
+        let route = req.path.substring(1);
+        app.locals.activeRoute = "/" + (isNaN(route.split('/')[1]) ? route.replace(/\/(?!.*)/, "") : route.replace(/\/(.*)/, ""));    
+        next();
+    });
+    
     // Route to serve HTML pages
     app.get("/", (req, res) => {
-        res.sendFile(path.join(__dirname, '/views/home.html'));
+        res.render('home');
     });
 
     app.get("/about", (req, res) => {
-        res.sendFile(path.join(__dirname, '/views/about.html'));
+        res.render('about');
     });
 
     app.get("/htmlDemo", (req, res) => {
-        res.sendFile(path.join(__dirname, '/views/htmldemo.html'));
+        res.render('htmlDemo');
     });
 
     // Route to add the student.
     app.get("/students/add", (req, res) => {
-        res.sendFile(path.join(__dirname, '/views/addStudents.html'))
+        res.render('addStudents');
     })
 
     app.post('/students/add', (req, res) => {

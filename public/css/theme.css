@@ -83,7 +83,7 @@ table tr:nth-child(odd) td {
 }
 
 table tr:nth-child(even) td {
-    background: rgb(71, 118, 245); 
+    background: rgb(221, 227, 245); 
 }
 
 tbody td {
@@ -93,6 +93,13 @@ tbody td {
     font-size: 1em; 
     border: 1px solid white; /* formatting of border in the table which will have white color. */
     color: darkslategray; 
+}
+table td a {
+    text-decoration: underline; /* Adds underline to links within table cells */
+}
+
+table td a:hover {
+    text-decoration: none; /* Optional: Removes underline on hover for better UX */
 }
 
 /* Format for the Button */

@@ -17,34 +17,20 @@
 			
 			<div class="collapse navbar-collapse" id="navbarSupportedContent">
 				<ul class="navbar-nav mr-auto">
-					<li class="nav-item"><a class="nav-link" href="/">Home</a></li>
-					<li class="nav-item active"><a class="nav-link" href="/about">About</a></li>
-					<li class="nav-item"><a class="nav-link" href="/htmlDemo">Html Demo</a></li>
-					<li class="nav-item"><a class="nav-link" href="/students/add">Add Student</a></li>
+                    {{#navLink "/"}}Home{{/navLink}}
+                    {{#navLink "/about"}}About{{/navLink}}
+                    {{#navLink "/htmlDemo"}}Html Demo{{/navLink}}
+                    {{#navLink "/students/add"}}Add Student{{/navLink}}
 				</ul>
 				<ul class="navbar-nav ml-auto">
-					<li class="nav-item"><a class="nav-link" href="/students">Students</a></li>
-					<li class="nav-item"><a class="nav-link" href="/tas">Teaching Assistants</a></li>
-					<li class="nav-item"><a class="nav-link" href="/courses">Courses</a></li>
+                    {{#navLink "/students"}}Students{{/navLink}}
+                    {{#navLink "/courses"}}Courses{{/navLink}}
 				</ul>
 			</div>
 		</nav>
 
 		<div class="container">
-			<div class="row">
-				<main class="col-md-12">
-					<!-- Professional greeting -->
-					<h1>Welcome to the About page</h1>
-						<p>This page provides information about myself and my background.</p>
-
-					<!-- Section header for personal information -->
-					<h2>Personal Information</h2>
-					<!-- Short paragraph about yourself -->
-					<p> My name is Aakash Harendrakumar Patel and my StudentID is 147805238, and I am currently pursuing Business Information Technology Course in Seneca Polytechnic.
-						I have completed by Bachelors in Information Technology in 2018 and I have more than 5 years of experience working in an IT Field.
-					</p>
-				</main>
-			</div>
+			{{{body}}}
 		</div>
 
 		<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>

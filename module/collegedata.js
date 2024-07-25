@@ -54,20 +54,6 @@
         });
     }
 
-    function getTAs() {
-        return new Promise((resolve, reject) => {
-            //declaring variable TAs and storing the Students whose TA property is true in this variable.
-            const TAs = dataCollection.students.filter(student => student.TA === true);
-            //condition to check if the TAs have any data and return data using the resolve method.
-            if (TAs.length > 0) {
-                resolve(TAs);
-            //printing "no results returned" message using the reject method of promise function.
-            } else {
-                reject("no results returned");
-            }
-        });
-    }
-
     function getCourses() {
         return new Promise((resolve, reject) => {
             //adding condition to check if the length > 0 then return data using resolve method of promise
@@ -135,6 +121,19 @@
         })
     }
 
+    function getCourseById(id) {
+        return new Promise((resolve, reject) => {
+            const course = dataCollection.courses.find(c => c.courseId === id);
+            console.log("Retrieved course:", course); // Debug log
+            if (course) {
+                resolve(course);
+            } else {
+                reject("query returned 0 results");
+            }
+        });
+    }
+    
+
     /*
     // Function to test getStudentByNum
     function testGetStudentByNum(num) {
@@ -152,4 +151,4 @@
     //mentioning this so that we can export the functions from this file.
     */
 
-    module.exports = { initialize, getAllStudents, getTAs, getCourses, getStudentsByCourse, getStudentByNum, addStudent};
+    module.exports = { initialize, getAllStudents, getCourses, getStudentsByCourse, getStudentByNum, addStudent, getCourseById};
