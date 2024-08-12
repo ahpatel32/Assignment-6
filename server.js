@@ -34,8 +34,10 @@ const exphbs = require('express-handlebars');
             if (arguments.length < 3)
                 throw new Error("Handlebars Helper equal needs 2 parameters");
             if (lvalue != rvalue) {
+                console.log('Returning options.inverse');
                 return options.inverse(this);
             } else {
+                console.log('Returning options.fn');
                 return options.fn(this);
             }
         }    
@@ -57,54 +59,50 @@ const exphbs = require('express-handlebars');
         const { course } = req.query;
         // If course parameter exists, call getStudentsByCourse(course)
         if (course) {
-        collegeData.getStudentsByCourse(parseInt(course))
-            .then(students => {
-                //if no records print No students found for this course
-                if (students.length === 0) {
-                    //res.status(404).json({ message: "No students found for this course" });
-                    res.render('students', { students: [], message: "No students found for this course" });
-                //return the students by courses
-                } else {
-                    res.render('students', { students: students});
-                }
-            })
-            //if we encounter any error in .then() block, it will be catch by the below code.
-            .catch(err => {
-                console.error("Error fetching students by course:", err);
-                res.render('students', { students: [], message: "Failed to retrieve students by course" });
-            });
-        } else {
-        // Otherwise, call getAllStudents() to get all students
-        collegeData.getAllStudents()
-            .then(students => {
-                //if no records print No students found
-                if (students.length === 0) {
-                    res.render('students', { students: [], message: "No students found" });
-                //return all the students
-                } else {
-                    res.render('students', { students: students });
-                }
-            })
-            //if we encounter any error in .then() block, it will be catch by the below code.
-            .catch(err => {
-                console.error("Error fetching all students:", err);
-                res.render('students', { students: [], message: "Failed to retrieve all students" });
-            });
-        }
-    });
-
+                // If course parameter exists, call getStudentsByCourse(course)
+                collegeData.getStudentsByCourse(parseInt(course))
+                    .then(students => {
+                        // Render the "students" view only if there are students
+                        if (students.length > 0) {
+                            res.render('students', { students: students });
+                        } else {
+                            res.render('students', { message: "No students found for this course" });
+                        }
+                    })
+                    .catch(err => {
+                        console.error("Error fetching students by course:", err);
+                        res.render('students', { message: "Failed to retrieve students by course" });
+                    });
+            } else {
+                // Otherwise, call getAllStudents() to get all students
+                collegeData.getAllStudents()
+                    .then(students => {
+                        // Render the "students" view only if there are students
+                        if (students.length > 0) {
+                            console.log(students); // Log the students data here
+                            res.render('students', { students: students });
+                        } else {
+                            res.render('students', { message: "No results" });
+                        }
+                    })
+                    .catch(err => {
+                        console.error("Error fetching all students:", err);
+                        res.render('students', { message: "Failed to retrieve all students" });
+                    });
+            }
+        });
+        
 
     // Third GET /courses route to get all the courses
     app.get("/courses", (req, res) => {
         // call getCourses() to get all Courses.
         collegeData.getCourses()
             .then(courses => {
-                //if no record printing No Courses found
-                if (courses.length === 0) {
-                    res.render('courses', { message: "no course found" });
+                if (courses.length > 0) {
+                    res.render('courses', { courses: courses });
                 //return the courses 
                 } else {
-                    res.render('courses', { courses: courses });
+                    res.render('courses', { message: "no course found" });
                 }
             })
             //if we encounter any error in .then() block, it will be catch by the below code.
@@ -118,39 +116,81 @@ const exphbs = require('express-handlebars');
     app.get("/student/:num", (req, res) => {
         const studentNum = parseInt(req.params.num); // Convert params.num to integer
         console.log("Searching for student with studentNum:", studentNum);
-        let studentData = null;
-        // call getStudentByNum() to get student details by number.
+    
+        let viewData = {};
+    
+        // Call getStudentByNum() to get student details by number.
         collegeData.getStudentByNum(studentNum)
             .then(student => {
-                studentData = student;
-                return  collegeData.getCourses();
-                //res.render("student", { student: student });
+                if (student) {
+                    viewData.student = student; // Store student data in viewData object
+                } else {
+                    viewData.student = null; // Set student to null if none were returned
+                }
+                return collegeData.getCourses(); // Fetch the list of courses
             })
             .then(courses => {
-                res.render("student", { student: studentData, courses: courses })
+                viewData.courses = courses; // Store course data in viewData object
+    
+                // Loop through viewData.courses and mark the selected course
+                if (viewData.student) {
+                    for (let i = 0; i < viewData.courses.length; i++) {
+                        if (viewData.courses[i].courseId == viewData.student.course) {
+                            viewData.courses[i].selected = true; // Mark the course as selected
+                        }
+                    }
+                }
             })
             .catch(err => {
-                // Handling the case where student data is not found
-                console.error("Error fetching student:", err);
-                res.render("student", { message: "Student not found" });
+                console.error("Error fetching data:", err);
+                viewData.courses = []; // Set courses to empty if there was an error
+            })
+            .then(() => {
+                if (viewData.student == null) {
+                    // If no student, return an error
+                    res.status(404).send("Student Not Found");
+                } else {
+                    // Render the student view with viewData
+                    res.render("student", { viewData: viewData });
+                }
             });
     });
+    
 
     // Route to get a specific course by ID
     app.get("/course/:num", (req, res) => {
         const courseId = parseInt(req.params.num, 10); // Convert params.num to integer
+        console.log(`Course ID from params: ${req.params.num}`);
         //call getCourseByID() to get the course details by courseid
         collegeData.getCourseById(courseId)
             .then(course => {
-                res.render('course', { course: course });
+                if (course) {
+                res.render('course', { course: course });    
+                }else{
+                    res.status(400).send("Course Not Found");
+                }
             })
             .catch(err => {
                 //Handling the case where course data is not found
                 console.error("Error fetching course:", err);
-                res.status(404).render('course', { message: "Course not found" });
-            });
+                res.status(500).send("Unable to retrieve course");
+             });
     });
 
+    //new path to delete the course by id
+    app.get('/course/delete/:id', (req, res) => {
+        const courseId = parseInt(req.params.id);
+    
+        collegeData.deleteCourseById(courseId)
+            .then(() => {
+                res.redirect('/courses');
+            })
+            .catch(err => {
+                console.error("Error deleting course:", err);
+                res.status(500).send("Unable to Remove Course / Course not found");
+            });
+    });
+    
     //New path for updating the students data.
     app.post('/student/update', (req, res) => {
         collegeData.updateStudent(req.body)
@@ -163,6 +203,17 @@ const exphbs = require('express-handlebars');
             });
     });
 
+    //New path for updating the courses data.
+    app.post('/course/update', (req, res) => {
+        collegeData.updateCourse(req.body)
+            .then(() => {
+                res.redirect('/courses'); // Redirect to the students page after updating the student
+            })
+            .catch((err) => {
+                console.error("Error updating student:", err);
+                res.status(500).send('Unable to update student');
+            });
+    });
     app.use(function(req,res,next){
         let route = req.path.substring(1);
         app.locals.activeRoute = "/" + (isNaN(route.split('/')[1]) ? route.replace(/\/(?!.*)/, "") : route.replace(/\/(.*)/, ""));    
@@ -183,9 +234,17 @@ const exphbs = require('express-handlebars');
     });
 
     // Route to add the student.
-    app.get("/students/add", (req, res) => {
-        res.render('addStudents');
-    })
+    app.get('/students/add', (req, res) => {
+        collegeData.getCourses()
+            .then(courses => {
+                console.log(courses);
+                res.render('addStudents', { courses: courses });
+            })
+            .catch(err => {
+                console.error('Error fetching courses:', err);
+                res.render('addStudents', { courses: [] });
+            });
+    });
 
     app.post('/students/add', (req, res) => {
         collegeData.addStudent(req.body)
@@ -194,6 +253,35 @@ const exphbs = require('express-handlebars');
             })
             .catch((err) => {
                 res.status(500).send('Unable to add student');
+            });
+    });      
+
+    // Route to delete a student
+    app.get('/student/delete/:studentNum', (req, res) => {
+        const studentNum = parseInt(req.params.studentNum); // Convert params.studentNum to integer
+
+        collegeData.deleteStudentByNum(studentNum)
+            .then(() => {
+                res.redirect('/students'); // Redirect to the students list after deletion
+            })
+            .catch(err => {
+                console.error("Error deleting student:", err);
+                res.status(500).send("Unable to Remove Student / Student not found");
+            });
+    });
+
+    // Route to add the course.
+    app.get("/courses/add", (req, res) => {
+        res.render('addCourse');
+    })
+    
+    app.post('/courses/add', (req, res) => {
+        collegeData.addCourse(req.body)
+            .then(() => {
+                res.redirect('/courses'); // Redirect to the students page after adding the student
+            })
+            .catch((err) => {
+                res.status(500).send('Unable to add course');
             });
     });      
 
